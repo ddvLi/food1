@@ -1,0 +1,129 @@
+SET NAMES UTF8;
+DROP DATABASE IF EXISTS foot;
+CREATE DATABASE foot CHARSET=UTF8;
+USE foot;
+
+#用户账户
+CREATE TABLE foot_user(
+  uid INT PRIMARY KEY AUTO_INCREMENT,
+  uphone CHAR(11),
+  uname VARCHAR(64),
+  upwd VARCHAR(128),
+  usex BOOL,
+  upic VARCHAR(256)
+);
+INSERT INTO foot_user VALUES(NULL,'18888888888','tom','123',1,NUll);
+
+
+#用户收货地址
+CREATE TABLE foot_user_address(
+	aid INT PRIMARY KEY AUTO_INCREMENT,
+	user VARCHAR(64),
+	uphone CHAR(11),
+	detailed_Address VARCHAR(512),
+	userId INT,
+	isDefault BOOL
+);
+INSERT INTO foot_user_address VALUES(NULL,'tom','18888888888','湖南省,长沙市,天心区,南门口111号',1,1);
+INSERT INTO foot_user_address VALUES(NULL,'tom','18888888888','湖南省,长沙市,天心区,东塘111号',1,0);
+
+#省级地址选项列表
+CREATE TABLE foot_address_province(
+	sid INT PRIMARY KEY AUTO_INCREMENT,
+	provinceName VARCHAR(64)
+);
+INSERT INTO foot_address_province VALUES(NULL,'选择省');
+INSERT INTO foot_address_province VALUES(NULL,'北京市');
+INSERT INTO foot_address_province VALUES(NULL,'湖南省');
+
+#市级地址选项列表
+CREATE TABLE foot_address_city(
+	cid INT PRIMARY KEY AUTO_INCREMENT,
+	cityName VARCHAR(64),
+	provinceId INT
+);
+INSERT INTO foot_address_city VALUES(NULL,'选择市','1');
+INSERT INTO foot_address_city VALUES(NULL,'北京','2');
+INSERT INTO foot_address_city VALUES(NULL,'县','2');
+INSERT INTO foot_address_city VALUES(NULL,'长沙市','3');
+INSERT INTO foot_address_city VALUES(NULL,'株洲市','3');
+INSERT INTO foot_address_city VALUES(NULL,'湘潭市','3');
+INSERT INTO foot_address_city VALUES(NULL,'岳阳市','3');
+
+#区级地址选项列表
+CREATE TABLE foot_address_district(
+	did INT PRIMARY KEY AUTO_INCREMENT,
+	districtName VARCHAR(128),
+	cityId INT
+);
+INSERT INTO foot_address_district VALUES(NULL,'平谷区',2);
+INSERT INTO foot_address_district VALUES(NULL,'怀柔区',2);
+INSERT INTO foot_address_district VALUES(NULL,'大兴区',2);
+INSERT INTO foot_address_district VALUES(NULL,'昌平区',2);
+INSERT INTO foot_address_district VALUES(NULL,'顺义区',2);
+INSERT INTO foot_address_district VALUES(NULL,'通州区',2);
+INSERT INTO foot_address_district VALUES(NULL,'房山区',2);
+INSERT INTO foot_address_district VALUES(NULL,'门头沟区',2);
+INSERT INTO foot_address_district VALUES(NULL,'海定区',2);
+INSERT INTO foot_address_district VALUES(NULL,'石景山区',2);
+INSERT INTO foot_address_district VALUES(NULL,'丰台区',2);
+INSERT INTO foot_address_district VALUES(NULL,'朝阳区',2);
+INSERT INTO foot_address_district VALUES(NULL,'西城区',2);
+INSERT INTO foot_address_district VALUES(NULL,'东城区',2);
+INSERT INTO foot_address_district VALUES(NULL,'延庆县',3);
+INSERT INTO foot_address_district VALUES(NULL,'密云县',3);
+INSERT INTO foot_address_district VALUES(NULL,'望城区',4);
+INSERT INTO foot_address_district VALUES(NULL,'浏阳市',4);
+INSERT INTO foot_address_district VALUES(NULL,'宁县县',4);
+INSERT INTO foot_address_district VALUES(NULL,'长沙县',4);
+INSERT INTO foot_address_district VALUES(NULL,'开福区',4);
+INSERT INTO foot_address_district VALUES(NULL,'岳麓区',4);
+INSERT INTO foot_address_district VALUES(NULL,'天心区',4);
+INSERT INTO foot_address_district VALUES(NULL,'芙蓉区',4);
+INSERT INTO foot_address_district VALUES(NULL,'醴陵市',5);
+INSERT INTO foot_address_district VALUES(NULL,'炎陵县',5);
+INSERT INTO foot_address_district VALUES(NULL,'茶陵县',5);
+INSERT INTO foot_address_district VALUES(NULL,'攸县',5);
+INSERT INTO foot_address_district VALUES(NULL,'株洲县',5);
+INSERT INTO foot_address_district VALUES(NULL,'天元区',5);
+INSERT INTO foot_address_district VALUES(NULL,'石峰区',5);
+INSERT INTO foot_address_district VALUES(NULL,'芦淞区',5);
+INSERT INTO foot_address_district VALUES(NULL,'荷塘区',5);
+INSERT INTO foot_address_district VALUES(NULL,'韶山市',6);
+INSERT INTO foot_address_district VALUES(NULL,'湘乡市',6);
+INSERT INTO foot_address_district VALUES(NULL,'湘潭市',6);
+INSERT INTO foot_address_district VALUES(NULL,'岳塘区',6);
+INSERT INTO foot_address_district VALUES(NULL,'雨湖区',6);
+INSERT INTO foot_address_district VALUES(NULL,'临湘市',7);
+INSERT INTO foot_address_district VALUES(NULL,'汨罗市',7);
+INSERT INTO foot_address_district VALUES(NULL,'平江县',7);
+INSERT INTO foot_address_district VALUES(NULL,'湘阴县',7);
+INSERT INTO foot_address_district VALUES(NULL,'华容县',7);
+INSERT INTO foot_address_district VALUES(NULL,'岳阳县',7);
+INSERT INTO foot_address_district VALUES(NULL,'君山区',7);
+INSERT INTO foot_address_district VALUES(NULL,'云溪区',7);
+INSERT INTO foot_address_district VALUES(NULL,'岳阳楼区',7);
+
+#美食类别
+CREATE TABLE foot_family_list(
+	ffid INT PRIMARY KEY AUTO_INCREMENT,
+  ffname VARCHAR(128)
+);
+INSERT INTO foot_family_list VALUES(NULL,'主食');
+INSERT INTO foot_family_list VALUES(NULL,'快餐');
+INSERT INTO foot_family_list VALUES(NULL,'早餐');
+INSERT INTO foot_family_list VALUES(NULL,'下午茶');
+
+#美食列表
+CREATE TABLE foots_list(
+	fid INT PRIMARY KEY AUTO_INCREMENT,
+	fname VARCHAR(128),
+	fprice DECIMAL(10,2),
+	details VARCHAR(128),
+	salesVal INT,
+	count INT,
+	isPinkage BOOL,
+	onSale BOOL,
+	familyId INT
+);
+INSERT INTO foot_list(NULL,'米饭',2,50,0,0,1)
