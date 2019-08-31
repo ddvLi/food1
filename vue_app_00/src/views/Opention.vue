@@ -1,6 +1,5 @@
 <template>
     <div class="app_Cus">
-        <myheader></myheader>
         <div class="element">
         <img src="../../public/images/file_58f5e700d93a2.png">
         </div>
@@ -22,6 +21,7 @@
         <mt-button size="large" type="primary" style="margin:0 auto;width:75%;background-color:rgb(52, 182, 253)" @click.native="opention">确定</mt-button>
          </div>
     </div>
+    </div> 
 </template>
 
 <script>
@@ -29,7 +29,10 @@ import Myheader from "../components/Myheader.vue"
 export default {
     data() {
         return {
-            
+            Op_name:"",
+            Op_contact:"",
+            Op_contact:"",
+            Op_content:""
         }
     },
     methods: {

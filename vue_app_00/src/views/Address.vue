@@ -1,6 +1,5 @@
 <template>
   <div id="address">
-    <myheader></myheader>
     <div class="d01" :class="d01_dp">
       <div class="d0">
         <div class="d1m">

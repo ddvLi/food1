@@ -129,26 +129,26 @@ CREATE TABLE foods_list(
 	onSale BOOL,                           #是否打折  1:打折, 0:不打折
 	fpid INT                               #商品类别id
 );
-INSERT INTO foods_list VALUES(NULL,'烤羊排',123.00,'内蒙古羊排','zs01.png',100,50,0,0,1);
+INSERT INTO foods_list VALUES(NULL,'烤羊排',123.00,'内蒙古羊排','zs01.png',100,50,1,0,1);
 INSERT INTO foods_list VALUES(NULL,'土豆焖牛肉',79.00,'红烧土豆焖野牛肉','zs02.png',125,50,0,0,1);
-INSERT INTO foods_list VALUES(NULL,'剁椒鱼头',89.00,'湖南剁辣椒蒸雄鱼头','zs03.png',88,50,0,0,1);
+INSERT INTO foods_list VALUES(NULL,'剁椒鱼头',89.00,'湖南剁辣椒蒸雄鱼头','zs03.png',88,50,1,0,1);
 INSERT INTO foods_list VALUES(NULL,'辣椒炒肉',15.00,'螺丝青椒炒肉','zs04.png',325,30,0,0,1);
 INSERT INTO foods_list VALUES(NULL,'小鸡炖蘑菇',69.00,'农家散养小鸡炖长白山野生蘑菇','zs05.png',77,50,0,0,1);
-INSERT INTO foods_list VALUES(NULL,'红烧牛肉面',26.00,'康师傅红烧牛肉面','kc01.png',56,66,0,0,2);
+INSERT INTO foods_list VALUES(NULL,'红烧牛肉面',26.00,'康师傅红烧牛肉面','kc01.png',56,66,1,0,2);
 INSERT INTO foods_list VALUES(NULL,'米粉',15.00,'桂林米粉','kc02.png',356,66,0,0,2);
-INSERT INTO foods_list VALUES(NULL,'肉夹馍',10.00,'陕西肉夹馍','kc03.png',306,100,0,0,2);
+INSERT INTO foods_list VALUES(NULL,'肉夹馍',10.00,'陕西肉夹馍','kc03.png',306,100,1,0,2);
 INSERT INTO foods_list VALUES(NULL,'汉堡包',36.89,'麦当劳牛肉汉堡','kc04.png',556,98,0,0,2);
 INSERT INTO foods_list VALUES(NULL,'寿司',25.00,'北海道三文鱼寿司','kc05.png',102,64,0,0,2);
-INSERT INTO foods_list VALUES(NULL,'营养早餐',19.00,'罗莎蛋糕','zc01.png',102,64,0,0,3);
-INSERT INTO foods_list VALUES(NULL,'生煎包',2.00,'上海生煎包','zc02.png',102,64,0,0,3);
-INSERT INTO foods_list VALUES(NULL,'三明治',6.00,'火腿三明治','zc03.png',102,64,0,0,3);
+INSERT INTO foods_list VALUES(NULL,'营养早餐',19.00,'罗莎蛋糕','zc01.png',102,64,1,0,3);
+INSERT INTO foods_list VALUES(NULL,'生煎包',2.00,'上海生煎包','zc02.png',102,64,1,0,3);
+INSERT INTO foods_list VALUES(NULL,'三明治',6.00,'火腿三明治','zc03.png',102,64,1,0,3);
 INSERT INTO foods_list VALUES(NULL,'油条',1.00,'营养健康油条','zc04.png',102,64,0,0,3);
 INSERT INTO foods_list VALUES(NULL,'粥',25.00,'皮蛋瘦肉粥','zc05.png',102,64,0,0,3);
-INSERT INTO foods_list VALUES(NULL,'奶茶',16.00,'芒果奶茶','xwc01.png',622,82,0,0,4);
-INSERT INTO foods_list VALUES(NULL,'咖啡',20.00,'逆袭摩卡','xwc02.png',412,64,0,0,4);
+INSERT INTO foods_list VALUES(NULL,'奶茶',16.00,'芒果奶茶','xwc01.png',622,82,1,0,4);
+INSERT INTO foods_list VALUES(NULL,'咖啡',20.00,'逆袭摩卡','xwc02.png',412,64,1,0,4);
 INSERT INTO foods_list VALUES(NULL,'果茶',25.00,'柠檬果茶酱','xwc03.png',328,114,0,0,4);
-INSERT INTO foods_list VALUES(NULL,'章鱼丸',20.00,'皮蛋瘦肉粥','xwc04.png',404,104,0,0,4);
-INSERT INTO foods_list VALUES(NULL,'臭豆腐',2.00,'长沙火宫殿臭豆腐','xwc05.png',262,114,0,0,4);
+INSERT INTO foods_list VALUES(NULL,'章鱼丸',20.00,'皮蛋瘦肉粥','xwc04.png',404,104,1,0,4);
+INSERT INTO foods_list VALUES(NULL,'臭豆腐',1.00,'长沙火宫殿臭豆腐','xwc05.png',262,114,0,0,4);
 
 #购物车列表
 CREATE TABLE food_car(
@@ -159,8 +159,8 @@ CREATE TABLE food_car(
 	pname VARCHAR(128),                    #商品名称
 	pprice DECIMAL(10,2),                  #商品价格
 	ppic VARCHAR(256),                     #商品图片
-	yprice DECIMAL(10,2),                  #邮费
-	money DECIMAL(10,2)                    #合计
+	money DECIMAL(10,2),                   #合计
+	isPinkage BOOL                         #是否包邮
 );
 
 #优惠卷类别
@@ -213,28 +213,23 @@ CREATE TABLE takeoutr_status(
 	tosid INT,                #外卖订单状态id
 	tosname VARCHAR(128)      #外卖订单状态名称
 );
-INSERT INTO takeoutr_status VALUES(NULL,'待付款');
-INSERT INTO takeoutr_status VALUES(NULL,'待发货');
-INSERT INTO takeoutr_status VALUES(NULL,'待收获');
+INSERT INTO takeoutr_status VALUES(NULL,'待收货');
 INSERT INTO takeoutr_status VALUES(NULL,'待评价');
 INSERT INTO takeoutr_status VALUES(NULL,'退款');
 INSERT INTO takeoutr_status VALUES(NULL,'已完成');
-INSERT INTO takeoutr_status VALUES(NULL,'已关闭');
 
 
 #订单列表
 CREATE TABLE user_takeout_order(
-	oid INT,               #订单id
-	otime BIGINT,          #下单时间
+	oid INT PRIMARY KEY AUTO_INCREMENT, #订单id
 	tosid INT,             #订单状态id
-	foid INT,              #订单种类id
+	auser VARCHAR(128),    #收件人
 	uid INT,               #当前用户id
-	uphone CHAR(11),       #当前用户手机号
-	gcount INT,             #购物车项目数量(购买商品数量)
-	pname VARCHAR(128),    #商品名称
-	ppic VARCHAR(256),     #商品图片
-	pprice DECIMAL(10,2),  #商品价格
-	yprice DECIMAL(10,2),  #邮费
-	money DECIMAL(10,2),   #合计
-	onSale BOOL            #是否打折  1:打折, 0:不打折
+	oname VARCHAR(128),    #商品名称
+	gcount INT,            #购物车项目数量(购买商品数量)
+	tmoney DECIMAL(10,2)  #合计
 ); 
+INSERT INTO user_takeout_order VALUES(NULL,1,"tom",1,"臭豆腐",20,25);
+INSERT INTO user_takeout_order VALUES(NULL,2,"tom",1,"烤羊排",1,123);
+INSERT INTO user_takeout_order VALUES(NULL,3,"tom",1,"红烧牛肉面",1,26);
+INSERT INTO user_takeout_order VALUES(NULL,4,"tom",1,"三明治",1,6);

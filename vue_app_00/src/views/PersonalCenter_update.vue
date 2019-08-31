@@ -1,6 +1,5 @@
 <template>
   <div id="center_update">
-    <myheader></myheader>
     <div class="center2">
       <div class="bg-wihte">
         <div class="tx">

@@ -27,7 +27,7 @@
             <span class="btn_img"><img src="../../public/images/center04.png" alt=""></span>
             <span class="btn_text">我的订单</span>
           </li>
-          <li @click="couponsFun">
+         <li @click="couponsFun">
             <span class="btn_img"><img src="../../public/images/center05.png" alt=""></span>
             <span class="btn_text">优惠卷</span>
           </li>
@@ -53,7 +53,7 @@ export default {
       this.$router.push("/PersonalCenter_update");
     },
     couponsFun(){
-      this.$router.push("/Coupos.vue");
+      this.$router.push("/Coupons.vue");
     },
     myOrderFun(){
       this.$router.push("/MyOrder");

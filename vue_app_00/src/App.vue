@@ -1,10 +1,21 @@
 <template>
- <div class="app-container">
-    <!--显示组件容器-->
-    <router-view>
-    </router-view>
- </div>
+   <div class="app-container">
+   <!--显示组件容器-->
+   <div v-if="$route.meta.keepAlive">
+      <myheader1 v-bind:name="$route.meta.title"></myheader1> 
+   </div>
+   <router-view></router-view>
+   </div>
 </template>
+   <script>
+   import myheader1 from "./components/Myheader.vue"
+   export default {
+      name:'app',
+      components:{
+         myheader1,
+      }, 
+   }
+</script>
 <style>
    .app-container{
      padding-top:0px;

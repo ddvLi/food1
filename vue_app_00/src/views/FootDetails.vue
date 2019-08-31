@@ -1,17 +1,16 @@
 <template>
     <div>
-        <myheader></myheader>
         <div class="fd-div">
         <div class="fdx-div">
-            <img src="../../public/images/file_59f0533a40813.png" alt="">
+            <img :src="'http://127.0.0.1:3000/'+a.ppic" alt=""/>
         </div>
         <!-- 2 -->
         <div class="fd-titles">
-            <div class="fd-title">{{title}}</div>
-            <div class="fd-price">{{price}}</div>
+            <div class="fd-title">{{a.pname}}</div>
+            <div class="fd-price">￥{{a.pprice}}.00</div>
             <div>
-                <div class="fd-quantity">库存：<span>{{quantity}}</span></div>
-                <div class="fd-span">运费：<span>{{mail}}</span></div>
+                <div class="fd-quantity">库存：<span>{{a.pcount}}</span></div>
+                <div class="fd-span">运费：<span>{{a.isPinkage==1 ? "包邮":"6.00元"}}</span></div>
             </div>
             </div>
         </div>
@@ -25,14 +24,14 @@
         </div>  
 
         <div class="fd-product">产品详情</div>
-        <div class="fd-product-p"><p>{{product}}</p></div>
+        <div class="fd-product-p"><p>{{a.pdetails}}</p></div>
     </div>
         <!-- 底部选项 -->
     <mt-tabbar fixed >
         <mt-tab-item id="" class="iconfont icon-jiarugouwuche fd-icon" >购物车</mt-tab-item>
         <mt-tab-item id="" class="iconfont icon-dianpu fd-icon" ><span @click="tzDp">店铺</span>   </mt-tab-item>
-        <mt-tab-item id=""><mt-button class="fd-btnj">加入购物车</mt-button></mt-tab-item>
-        <mt-tab-item id=""><mt-button class="fd-btnl">立即购买</mt-button></mt-tab-item>
+        <mt-tab-item id=""><mt-button class="fd-btnj" @click="addCart">加入购物车</mt-button></mt-tab-item>
+        <mt-tab-item id=""><mt-button class="fd-btnl" @click="appCart">立即购买</mt-button></mt-tab-item>
 </mt-tabbar>
     </div>
 
@@ -44,21 +43,78 @@ import Myheader from "../components/Myheader.vue"
 export default {
     data() {
         
-        return { title:"芒果奶茶",
-                 price:"￥16.00",
-                 quantity:19,
-                 mail:"包邮",
-                 product:"芒果奶茶"}
+        return { 
+                allData:{},
+                a:{},
+                gcount:1,
+                gid:1,
+                }
     },
-    methods: {
-        tzDp(){
-            console.log(1111)
-            this.$router.push({
-            path:'Opention'
-        })
-        }
-    },
-    components:{
+// 接收foots的id
+mounted(){
+       
+        this.pid=this.$route.params.pid;
+        // console.log("DDDDDDDDDDDDDDDDDDDDDDDDDD"+this.pid)
+        var url= "lqc";
+        var pid=this.pid;
+        var objs={pid}
+        this.axios.get(url,{params:objs}).then(res=>{
+        // console.log(res.data.data[0]);
+        this. a=res.data.data[0];
+          
+        //  console.log(this.a);
+    });
+},
+methods: {
+        // 购物车
+addCart(){
+        var pid=this.a.pid;
+        var pname=this.a.pname;
+        // console.log("=========="+n)
+        var pprice=this.a.pprice;
+        var ppic=this.a.ppic;
+        var gcount=this.gcount;
+        var isPinkage=this.a.isPinkage;
+        var url="addcart";
+        var objs={pid:pid,pname:pname,pprice:pprice,ppic:ppic,gcount:gcount,isPinkage:isPinkage};
+        this.axios.get(url,{params:objs}).then(res=>{
+        if(res.data.code==-1){
+        this.$toast("请登录");
+        this.$router.push("/Login");
+        return;
+        }else{this.$toast("添加成功");
+        this.popupVisible=false;
+   }
+   })
+},
+// 跳转结账页面
+appCart(){
+    var pid=this.pid;
+    var pname=this.a.pname;
+    // console.log("=========="+n)
+    var pprice=this.a.pprice;
+    var ppic=this.a.ppic;
+    var gcount=this.gcount;
+    var isPinkage=this.a.isPinkage;
+    var url="addcart"
+    var objs={pid:pid,pname:pname,pprice:pprice,ppic:ppic,gcount:gcount,isPinkage:isPinkage};
+    console.log(objs);
+    this.axios.get(url,{params:objs}).then(res=>{
+    if(res.data.code==-1){
+    this.$toast("请登录");
+    this.$router.push("/Login");
+    return;
+    }else{
+    this.$router.push("/Buy");
+}
+   })
+
+},
+tzDp(){
+       this.$router.push("/ContactUs");
+    }
+},
+components:{
         "myheader":Myheader
     }
 }

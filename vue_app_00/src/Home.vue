@@ -1,6 +1,6 @@
 <template>
  <div class="page-tabbar">
-    <myheader></myheader>
+    <myheader :unameomg="unameomg" ></myheader>
     
     <!--:切换面板列表index-->
     <mt-tab-container class="page-tabbar-container" v-model="active">
@@ -59,12 +59,12 @@ export default {
       //面板中显示子组件id
       active:"index",
       uid:"",
-      
+      unameomg:"首页",
       //创建数组保存图片焦点状态
       currentIndex:[
-        {isSelect:true},
-        {isSelect:false},
-        {isSelect:false},
+      {isSelect:true,unameomg:"首页"},
+      {isSelect:false,unameomg:"活动"},
+      {isSelect:false,unameomg:"个人中心"},
       ]
     }
   },
@@ -78,6 +78,7 @@ export default {
        if(n==i){
         //3:当前下标元素true 10:22
         this.currentIndex[i].isSelect=true;
+        this.unameomg=this.currentIndex[i].unameomg
        }else{
         //4:其它元素修改false
         this.currentIndex[i].isSelect=false;

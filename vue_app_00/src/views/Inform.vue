@@ -1,6 +1,5 @@
 <template>
   <div id="informt">
-    <myheader></myheader>
     <div class="form-top">
       <div>
         <span @click="Returnto" class="iconfont icon-xiangzuojiantou ssspan"></span>

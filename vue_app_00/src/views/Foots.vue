@@ -3,7 +3,7 @@
   <!-- 商品列表 -->
   <div class="rootstyle"  v-for="(item,i) of list " :key="i">
       <div class="leftimgtxt" >
-          <img :src=" 'http://127.0.0.1:3000/'+item.ppic" class="imgstyle" @click="tzDetails"/>
+          <img :src=" 'http://127.0.0.1:3000/'+item.ppic" class="imgstyle" @click="tzDetails(item.pid)"/>
             <div class="titlestyle">
               <span class="title">{{item.pname}}</span>
               <span class="price">￥{{item.pprice.toFixed(2)}}</span>
@@ -57,73 +57,73 @@ export default {
       gcount:1,
       gid:1,
       jian:true,
-      
+      isPinkage:""
     }
   },
-  watch:{
-  popupVisible(){
+watch:{
+    popupVisible(){
     // console.log(this.popupVisible)
     if(this.popupVisible==false){
-      this.gcount = 1
-      // console.log(123)
+    this.gcount = 1
+    // console.log(123)
     }
   }
 },
 
 methods: {
-  tzDetails(){
-   this.$router.push("/FootDetails");
-  },
+    tzDetails(pid){
+    this.$router.push({path: `/FootDetails/${pid}`});
+},
 
 //加入购物车
-   addCart(e){
-  var pid=e.target.dataset.pid;
-  var n=e.target.dataset.pname;
-  var p=e.target.dataset.pprice;
-  var m=e.target.dataset.ppic;
+addCart(){
+  var pid=this.popup.pid;
+  var n=this.popup.pname;
+  var p=this.popup.pprice;
+  var m=this.popup.ppic;
+  var isPinkage=this.popup.isPinkage;
   var c=this.gcount;
-  var gid=this.gid;
   var url="addcart"
-var objs={pid:pid,pname:n,pprice:p,ppic:m,gcount:c,gid:(gid+1)};
-console.log(objs);
+  var objs={pid:pid,pname:n,pprice:p,ppic:m,gcount:c,isPinkage:isPinkage};
+  console.log(objs);
   this.axios.get(url,{params:objs}).then(res=>{
   if(res.data.code==-1){
     this.$toast("请登录");
     this.$router.push("/Login");
     return;
    }else{this.$toast("添加成功");
-      this.popupVisible=true
+  this.popupVisible=false;
    }
   })
 },
 
 car(e){
     var pid = e.target.dataset.pid;
-     var obj={pid:pid}
-     this.axios.get("lqc",{params:obj}).then(res=>{
-      this.popup = res.data.data[0];
-      console.log(this.popup)
-     })
+    var obj={pid:pid}
+    this.axios.get("lqc",{params:obj}).then(res=>{
+    this.popup = res.data.data[0];
+    
+    })
     this.popupVisible=!this.popupVisible
     
-  },
-  fbtn(){  
-  if(this. gcount>1){
+},
+    fbtn(){  
+    if(this. gcount>1){
     this. gcount--;
-   }else{
-   }
-  },
+    }else{
+    }
+    },
 zbtn(){
-  var a=this.popup.pcount;
-  if(this. gcount<a){
+    var a=this.popup.pcount;
+    if(this. gcount<a){
     this. gcount++;
-  }else{
-     this.$toast(" 没有跟多库存了！");
+    }else{
+    this.$toast(" 没有跟多库存了！");
      
   }
 },
-  hidden(){
-     this.popupVisible=false
+    hidden(){
+    this.popupVisible=false
  },
   foods(){
     // this.$router.push('/FootDetails');
@@ -156,26 +156,25 @@ loadMore(){
         //发送ajax请求获取当前页内容
         this.axios.get(url,{params:obj}).then(res=>{
         //  2：获取服务器返回结果
-        console.log(res.data.data);
+        //console.log(res.data.data);
         //  3：将返回结果保存？？
         // this.list=res.data.data;
         //拼接多页
        var rows =this.list.concat(res.data.data);
-    //    将结果赋值list
+        // 将结果赋值list
        this.list=rows;
        var shao=res.data.data;
+       //console.log(shao);
         if(shao==""){
           this.$toast("没有更多商品了!");
             return;
-
-        }
-
-         })
-       }
-   }, 
-    created() {
-        this.loadMore();
-        // console.log("组件创建成功");
+            }
+            })
+            }
+}, 
+created() {
+      this.loadMore();
+      // console.log("组件创建成功");
     },
 }
 </script>

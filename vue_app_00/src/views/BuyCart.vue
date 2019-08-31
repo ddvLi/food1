@@ -54,7 +54,7 @@ export default {
             if(item.gcount<1){
                 var gid=item.gid;
                 this.$messagebox.confirm("是否删除指定商品").then(res=>{
-                var url="del";
+                var url="cartDel";
                 var obj={gid:gid};
                 this.axios.get(url,{params:obj}).then(res=>{
                    if(res.data.code>0){

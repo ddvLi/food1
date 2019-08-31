@@ -1,6 +1,5 @@
 <template>
   <div>
-    <myheader></myheader>
     <div class="wztop_01">
       <!-- 标题 -->
       <div class="wztop_02">

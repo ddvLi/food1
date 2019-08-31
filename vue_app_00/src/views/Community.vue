@@ -1,6 +1,5 @@
 <template>
 <div id="fuye">
-  <myheader></myheader>
   <div>
     <!-- 搜索框 -->
       <div class="ssk_01">

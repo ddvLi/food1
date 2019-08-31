@@ -386,17 +386,17 @@ server.get("/product",(req,res)=>{
 })
 server.get("/lqc",(req,res)=>{
    var pid=req.query.pid;
-   console.log(pid)
+   // console.log(pid)
    // 3：设置参数默认值pno：1pageSize:4
    // 5：对pageSize转换整型？nodejs报错
    // 6：创建sql语句
-   var sql="SELECT pid,pname,pprice,ppic,salesVal,pcount,isPinkage,fpid FROM foods_list WHERE pid=?";
+   var sql="SELECT pid,pname,pprice,ppic,salesVal,pcount,isPinkage,fpid,pdetails FROM foods_list WHERE pid=?";
    //7:通过连接池发送sql语句
    pool.query(sql,[pid],(err,result)=>{if(err)throw err;
    //8获取数据库返回的查询结果
    //9:将查询结果发送客户端
-      res.send({code:1,data:result});
-     // console.log(result)
+   res.send({code:1,data:result});
+   // console.log(result)
    });
 })
 server.get("/staple",(req,res)=>{
@@ -425,27 +425,23 @@ server.get("/addcart", (req, res) => {
        })
        return;
    }
+   console.log(res.query);
    var pid = req.query.pid;
    var pprice = req.query.pprice;
    var pname = req.query.pname;
    var gcount = req.query.gcount;
+ 
    var ppic = req.query.ppic;
-   var money = (parseInt(pprice) + 2) * gcount;
-   var sql = "SELECT gid FROM food_car";
-   sql += " WHERE uid = ? AND pid=?";
-   pool.query(sql, [uid, pid], (err, result) => {
-       if (err) throw err;
-       var sql = "";
-       if (result.length == 0) {
-           sql = `INSERT INTO food_car VALUES(null,${uid},${pid},${gcount},'${pname}',${pprice},'${ppic}',2,${money})`;
-       } else {
-           sql = `UPDATE food_car SET gcount=gcount+1 WHERE uid=${uid} AND pid=${pid}`;
-       }
-       pool.query(sql, (err, result) => {
-           if (err) throw err;
-           console.log(result);
-           res.send({ code: 1, msg: "添加成功" })
-       })
+   console.log(isPinkage);
+   var isPinkage=req.query.isPinkage;
+   var money = (parseInt(pprice) ) * gcount;
+   var sql =`INSERT INTO food_car VALUES(null,${uid},${pid},${gcount},'${pname}',${pprice},'${ppic}',${money},${isPinkage})`;
+   pool.query(sql, (err, result) => {
+      console.log(1111111);
+      if (err) throw err;
+      console.log(222222);
+      res.send({ code: 1, msg: "添加成功" })
+      console.log(333333);
    })
 })
 
@@ -456,7 +452,7 @@ server.get("/cart", (req, res) => {
       res.send({ code: -1, msg: "请登录" });
       return;
    }
-   var sql = "SELECT ppic,yprice,pname,gid";
+   var sql = "SELECT ppic,isPinkage,pname,gid";
    sql += " ,pprice,gcount,money";
    sql += " FROM food_car";
    sql += " WHERE uid=?";
@@ -467,8 +463,9 @@ server.get("/cart", (req, res) => {
 })
 //购物车全删
 server.get("/delAll", (req, res) => {
-   var gid = req.query.gid;
-   var sql = "DELETE FROM food_car" 
+   var gid = req.query.ids;
+   console.log(gid)
+   var sql = `DELETE FROM food_car where gid in (${gid})`
    pool.query(sql, [gid], (err, result) => {
       if (err) throw err;
       if (result.affectedRows > 0) {
@@ -478,79 +475,322 @@ server.get("/delAll", (req, res) => {
       }
    })
 })
-//电商订单
-server.get("/tostore1", (req, res) => {
-   var uid = req.session.uid;
-   if (!uid) {
-      res.send({ code: -1, msg: "请登录" });
-      return;
+
+
+//全部订单
+server.get("/Allorder", (req, res) => {
+   var output={
+      obj:{},
+      num:""
    }
-   var sql = "SELECT ppic,yprice,pname,oid";
-   sql += " ,pprice,gcount,money,otime";
-   sql += " FROM user_takeout_order";
-   sql += " WHERE uid=? and tosid=1 and foid=1";
-   pool.query(sql, [uid], (err, result) => {
-      if (err) throw err;
-      res.send({ code: 1, msg: "查询成功", data: result });
+   var uid=req.query.uid;
+   function getAll(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=?";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.obj=result;
+                  resolve();
+               }
+            })
+         }   
+      )
+   }
+   function getCount(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=2";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.num=result.length;
+                  resolve();
+               }else{
+                  output.num=0;
+                  resolve();
+               }
+            })
+         }
+      )
+   }
+   (async function(){
+      await Promise.all([getAll(),getCount()]);
+      res.send(output);
+   })()
+})
+//待收货订单
+server.get("/Dshorder", (req, res) => {
+   var uid=req.query.uid;
+   var output={
+      obj:{},
+      num:""
+   }
+   function getDsh(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=1";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.obj=result;
+                  resolve();
+               }else{
+                  resolve();
+               }
+            })
+         }
+      )
+   }
+   function getCount(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=2";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.num=result.length;
+                  resolve();
+               }else{
+                  output.num=0;
+                  resolve();
+               }
+            })
+         }
+      )
+   }
+   (async function(){
+      await Promise.all([getDsh(),getCount()]);
+      res.send(output);
+   })()
+})
+//待评价订单
+server.get("/Dpjorder", (req, res) => {
+   var output={
+      obj:{},
+      num:""
+   }
+   var uid=req.query.uid;
+   var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=2";
+   pool.query(sql,[uid],(err,result)=>{
+      if(err)throw err;
+      if(result.length>0){
+         output.obj=result;
+         output.num=result.length;
+         res.send(output);
+      }else{
+         output.num=0;
+         res.send(output);
+      }
    })
 })
-server.get("/tostore2", (req, res) => {
-   var uid = req.session.uid;
-   if (!uid) {
-      res.send({ code: -1, msg: "请登录" });
-      return;
+//退款订单
+server.get("/Thorder", (req, res) => {
+   var output={
+      obj:{},
+      num:""
    }
-   var sql = "SELECT ppic,yprice,pname,oid";
-   sql += " ,pprice,gcount,money,otime";
-   sql += " FROM user_takeout_order";
-   sql += " WHERE uid=? and tosid=2 and foid=1";
-   pool.query(sql, [uid], (err, result) => {
-      if (err) throw err;
-      res.send({ code: 1, msg: "查询成功", data: result });
+   var uid=req.query.uid;
+   function getTh(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=3";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.obj=result;
+                  resolve();
+               }else{
+                  resolve();
+               }
+            })
+         }   
+      )
+   }
+   function getCount(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=2";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.num=result.length;
+                  resolve();
+               }else{
+                  output.num=0;
+                  resolve();
+               }
+            })
+         }
+      )
+   }
+   (async function(){
+      await Promise.all([getTh(),getCount()]);
+      res.send(output);
+   })()
+})
+//已完成订单
+server.get("/Over", (req, res) => {
+   var output={
+      obj:{},
+      num:""
+   }
+   var uid=req.query.uid;
+   function getOver(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=4";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.obj=result;
+                  resolve();
+               }else{
+                  resolve();
+               }
+            })
+         }   
+      )
+   }
+   function getCount(){
+      return new Promise(
+         function(resolve,reject){
+            var sql="SELECT * FROM user_takeout_order WHERE uid=? AND tosid=2";
+            pool.query(sql,[uid],(err,result)=>{
+               if(err)throw err;
+               if(result.length>0){
+                  output.num=result.length;
+                  resolve();
+               }else{
+                  output.num=0;
+                  resolve();
+               }
+            })
+         }
+      )
+   }
+   (async function(){
+      await Promise.all([getOver(),getCount()]);
+      res.send(output);
+   })()
+})
+
+//收货确认
+server.get("/tjqr", (req, res) => {
+   var oid=req.query.oid;
+   var sql="UPDATE user_takeout_order SET tosid=2 WHERE oid=?";
+   pool.query(sql,[oid],(err,result)=>{
+      if(err)throw err;
+      if(result.affectedRows>0){
+         res.send({code:1,msg:"update success"});
+      }else{
+         res.send({code:0,msg:"update error"});
+      }   
    })
 })
-server.get("/tostore3", (req, res) => {
+
+//商品评价
+server.get("/tjpl",(req,res)=>{
+   var oid=req.query.oid;
+   var sql="UPDATE user_takeout_order SET tosid=4 WHERE oid=?";
+   pool.query(sql,[oid],(err,result)=>{
+      console.log(11111);
+      if(err)throw err;
+      if(result.affectedRows>0){
+         res.send({code:1,msg:"update success"});
+      }else{
+         res.send({code:0,msg:"update error"});
+      }   
+   })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//buy加载默认地址
+server.get("/BuyAddress", (req, res) => {
    var uid = req.session.uid;
    if (!uid) {
-      res.send({ code: -1, msg: "请登录" });
-      return;
-   }  
-   var sql = "SELECT ppic,yprice,pname,oid";
-   sql += " ,pprice,gcount,money,otime";
-   sql += " FROM user_takeout_order";
-   sql += " WHERE uid=? and tosid=3 and foid=1";
+       res.send({ code: -1, msg: "请登录" });
+       return;
+   }
+   var sql = "SELECT auser,aphone,address";
+   sql += " FROM food_user_address";
+   sql += " WHERE isDefault=1";
    pool.query(sql, [uid], (err, result) => {
-      if (err) throw err;
-         res.send({ code: 1, msg: "查询成功", data: result });
+       if (err) throw err;
+       res.send({ code: 1, msg: "查询成功", data: result });
+   })
+})
+//结算添加至订单
+server.get("/addorder", (req, res) => {
+var uid = req.session.uid;
+if (!uid) {
+   res.send({
+       code: -1,
+       msg: "请先登录"
+   })
+   return;
+}
+var tosid = 1;
+var auser = req.query.auser;
+var gcount = req.query.gcount;
+var pname = req.query.pname;
+var tmoney = req.query.tmoney;
+var sql = "SELECT * FROM user_takeout_order";
+sql += " WHERE uid = ?";
+pool.query(sql, [uid], (err, result) => {
+   if (err) throw err;
+   var sql = "";
+   sql = `INSERT INTO user_takeout_order VALUES(null,${tosid},"${auser}",${uid},"${pname}",${gcount},${tmoney})`;
+   pool.query(sql, (err, result) => {
+       if (err) throw err;
+       res.send({ code: 1, msg: "添加成功" })
+   })
+})
+})
+
+
+
+
+
+server.get("/add",(req,res)=>{
+   var i=req.query.i
+   var gid=req.query.gid
+   var sql="select gcount from food_car where gid=?"
+   pool.query(sql,[gid],(err,aa)=>{
+      if (err){throw err}
+      var gcount=aa[0].gcount
+      gcount=parseFloat(gcount)
+      if (i=="1"){
+         gcount++
+      }else{
+         gcount--
+      }
+      if (gcount<=1){
+         gcount=1
+      }
+      var sql="update food_car set gcount=? where gid=?"
+      pool.query(sql,[gcount,gid],(err,bb)=>{
+         if (err){throw err}
+            res.send({code:1,msg:"修改成功"})
+         })
       })
    })
-server.get("/tostore4", (req, res) => {
-   var uid = req.session.uid;
-   if (!uid) {
-      res.send({ code: -1, msg: "请登录" });
-      return;
-   }
-   var sql = "SELECT ppic,yprice,pname,oid";
-   sql += " ,pprice,gcount,money,otime";
-   sql += " FROM user_takeout_order";
-   sql += " WHERE uid=? and tosid=4 and foid=1";
-   pool.query(sql, [uid], (err, result) => {
-      if (err) throw err;
-      res.send({ code: 1, msg: "查询成功", data: result });
-   })
-})
-server.get("/tostore", (req, res) => {
-   var uid = req.session.uid;
-   if (!uid) {
-      res.send({ code: -1, msg: "请登录" });
-      return;
-   }
-   var sql = "SELECT ppic,yprice,pname,oid";
-   sql += " ,pprice,gcount,money,otime,tosid";
-   sql += " FROM user_takeout_order";
-   sql += " WHERE uid=? and foid=1";
-   pool.query(sql, [uid], (err, result) => {
-      if (err) throw err;
-      res.send({ code: 1, msg: "查询成功", data: result });
-   })
-})
+
+   

@@ -1,6 +1,5 @@
 <template>
     <div class="app_Cus">
-         <myheader></myheader>
         <div class="element">
         <img src="../../public/images/file_58f5e700d93a2.png">
         </div>

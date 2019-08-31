@@ -21,10 +21,19 @@ export default {
     data() {
         return {
              list:[],
-             CartTotal:"310.00"
+             CartTotal:"310.00",
+             TotalYprice:0
         }
     },
     methods:{
+        GetTotalYprice(){
+            this.list.map((item) => {
+                if(item.isPinkage==0){
+                    console.log(11111111111);
+                    this.TotalYprice+=6; 
+                }
+        })
+    },
         loadCart(){
            var url="cart";
            this.axios.get(url).then(res=>{
@@ -36,6 +45,7 @@ export default {
                }else{
                    var list=res.data.data;
                    this.list=list;
+                   this.GetTotalYprice();
                }
            })
          },
@@ -54,18 +64,8 @@ export default {
             var total = 0;
             this.list.map((item) => {total += item.pprice});
             return total;
-        },
-        TotalMoney(){
-            var total = 0;
-            this.list.map((item) => {total += item.money});
-            return total;
-        },
-        TotalYprice(){
-            var total = 0;
-            this.list.map((item) => {total += item.yprice});
-            return total;
         }
-      },
+}
 }
 </script>
 <style scoped>

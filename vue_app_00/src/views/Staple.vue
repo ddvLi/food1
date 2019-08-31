@@ -2,7 +2,7 @@
 <div>
     <!-- 头部导航栏 -->
     <div style="height:1px"></div>
-<myheader></myheader>
+    <myheader :unameomg="unameomg" ></myheader>
 
     <!-- 商品列表 --> 
 <div class="rootstyle"  v-for="(item,i) of list " :key="i"  >
@@ -55,20 +55,22 @@ export default {
   data(){
     return{
       popupVisible:false,
-          list:[],
-          pno:0,
-          pname:"",
-          popup:{},
-          gcount:1,
-          fpid:"",
-          a:"",
-          ppic:{},
-          pname:{},
-          pprice:{},
-          pcount:{},
-          pid:0,
-         jian:true
-          }
+      list:[],
+      pno:0,
+      pname:"",
+      popup:{},
+      gcount:1,
+      fpid:"",
+      a:"",
+      ppic:{},
+      pname:{},
+      pprice:{},
+      pcount:{},
+      pid:0,
+      jian:true,
+      unameomg:'首页',
+      unameomgarr:['主食','快餐','早餐','下午']
+    }
   },
  
   watch: {
@@ -153,6 +155,7 @@ loadMore(e){
         this.fpid=this.$route.params.fpid;
         console.log(this.$route.params.fpid);
         this.loadMore();
+        this.unameomg=this.unameomgarr[this.fpid-1]
         // console.log("组件创建成功");
     },
     components:{
